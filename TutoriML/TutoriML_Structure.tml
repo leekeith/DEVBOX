@@ -1,0 +1,36 @@
+//TutoriML structure
+//Keith Lee 2015
+
+`language c
+`title Hello World
+`n_pages 2
+`author Keith Lee
+
+	`start 1
+		markdown goes here
+	``
+	`codeset
+		Code goes here
+	``
+	`end 1
+
+
+	`start 2
+		markdown
+	``
+	`codeprepend
+		code
+	``
+	`codeappend
+		code
+	``
+	`end 2
+
+
+
+`title More Hello World
+`count 1
+
+	`start 1
+		markdown
+	`end 1

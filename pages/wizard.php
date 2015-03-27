@@ -53,12 +53,14 @@
   		}
   			
   </style>
-	<title>DEV BOX Setup Wizard</title>
+	<title>DEVBOX Setup Wizard</title>
 	</head>
 	<body>
 		<!--<?php echo $wiz_stage; ?>-->
-		<big style="color: rgb(246, 0, 0);"><big><big>DEV<br>
-		BOX</big></big></big><br><br>
+		<img style="width: 209px" alt="DEVBOX" title="DEVBOX Logo"
+	src="DevBoxLogoTest418x146.png">
+<br>
+
 		<div id="form" class="left">
 			<?php if($wiz_stage==0){ ?>
 				<form method="post" name="setup1">

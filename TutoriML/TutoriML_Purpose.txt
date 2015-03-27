@@ -1,0 +1,17 @@
+TutoriML puropse/outline
+
+In the spirit of markdown, TutoriML is a tool designed to simplify the development of tutorial content for web-based software development guides.
+It is built under the premise that every page of the tutorial document contains two categories of content:
+	Explanitory text
+	Example code
+Certain portions of the example code would often be written inline with the text, but large blocks may be presented in a separate element, such as a textbox.
+This would definitely be the case for interactive sites, where the user could add to the example code and experiment within the web interface.
+More often than not, as one progresses through the tutorial, most of the code remains the same while portions are added or replaced.
+TutoriML helps provide this functionality within a web application by parsing the .tml document and dividing it into slides.
+Each slide contains at least a "content" block.  This is the explanitory text, written in markdown, that will appear on the website.
+Most slides will contain at least one "code" block with one of the following modify insructions:
+	codeset
+	codeappend
+	codeprepend
+	codereplace
+	

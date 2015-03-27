@@ -1,0 +1,29 @@
+`title The Default Tutorial
+`n_pages 2 
+`start 1
+	##Section 1
+	Hello This is slide 1 Section one
+	
+	###Subsection 1
+	This is slide 1 section one subsection one
+	
+``
+`codeset
+int main()
+{
+	return 0;
+}
+``
+`end 1
+
+`start 2
+This is slide 2!
+This should still be on line 1.  
+This should be slide 2 line 2
+
+This is slide 2 paragraph 2!
+``
+`codeprepend
+#include <stdio.h>
+``
+`end 2

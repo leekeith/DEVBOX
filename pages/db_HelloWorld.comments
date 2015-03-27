@@ -1,0 +1,5 @@
+Include required libraries
+Define globals, constants and macros
+Begin main program
+	Print the string to the terminal
+	end program

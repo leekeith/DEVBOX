@@ -1,5 +1,7 @@
 // fbBmp2fb.h
 // Keith Lee
+#ifndef __FBBMP2FB_H__
+#define __FBBMP2FB_H__
 
 typedef struct fileHeader{
 	char head[2];
@@ -29,3 +31,5 @@ typedef struct bmp{
 
 int fbBmp_openBmp(char* path, bmp* the_bmp);
 int fbBmp_draw(dev_fb* fb, bmp* the_bmp, int scale, int x, int y);
+
+#endif
