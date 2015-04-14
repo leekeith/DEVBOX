@@ -1,3 +1,0 @@
-main.c: In function 'main':
-main.c:16:3: warning: implicit declaration of function 'printf' [-Wimplicit-function-declaration]
-main.c:16:3: warning: incompatible implicit declaration of built-in function 'printf' [enabled by default]

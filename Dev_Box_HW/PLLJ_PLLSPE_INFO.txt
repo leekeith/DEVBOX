@@ -1,0 +1,10 @@
+PLL_Name	soc_system:u0|soc_system_up_clocks_0:up_clocks_0|altpll:DE_Clock_Generator_System|altpll_ojb2:auto_generated|generic_pll1~FRACTIONAL_PLL
+PLLJITTER	22
+PLLSPEmax	50
+PLLSPEmin	-50
+
+PLL_Name	soc_system:u0|soc_system_up_clocks_0:up_clocks_0|altpll:DE_Clock_Generator_System|altpll_ojb2:auto_generated|generic_pll3~PLL_OUTPUT_COUNTER
+PLLJITTER	NA
+PLLSPEmax	NA
+PLLSPEmin	NA
+
