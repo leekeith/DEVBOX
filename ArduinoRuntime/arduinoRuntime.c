@@ -70,16 +70,16 @@ void pinMode(int pin, int mode)
 	{
 		d_pin_mode[pin]=(mode<<8)|_n_output;
 		if(_n_output<10)
-			led[_n_output]=d_pin[pin];
+			ledr[_n_output]=d_pin[pin];
 		_n_output++;
 	}
 	else
 	{
 		d_pin_mode[pin]=(mode<<8)|_n_input;
 		if(_n_input<4)
-			d_pin[pin]=key[_n_input];
+			d_pin[pin]=keys[_n_input];
 		else
-			d_pin[pin]=sw[_n_input-4];
+			d_pin[pin]=switches[_n_input-4];
 		_n_input++;
 	}
 	//printf("o: %d\ni: %d\n\n",_n_output, _n_input);
@@ -148,7 +148,7 @@ void drawKeyState(dev_fb* fb)
 	color[0]=color[1]=color[2]=0;
 	for(i=3;i>=0;i--)
 	{
-		if(key[i])
+		if(keys[i])
 			color[0]=255;
 		else
 			color[0]=0;
@@ -167,7 +167,7 @@ void drawSwState(dev_fb* fb)
 	top_color[1]=top_color[2]=bottom_color[1]=bottom_color[2]=0;
 	for(i=9;i>=0;i--)
 	{
-		if(sw[i])
+		if(switches[i])
 		{
 			top_color[0]=255;
 			bottom_color[0]=0;	
@@ -192,13 +192,13 @@ void getIo(int fd)
   
 	for(i=0;i<10;i++)
 	{
-		sw[i]=input_val&1;
+		switches[i]=input_val&1;
 		input_val=input_val>>1;
 	}
 	input_val=~(devbox_get_key(fd) & 0xf);
 	for(i=0;i<4;i++)
 	{
-		key[i]=input_val&1;
+		keys[i]=input_val&1;
 		input_val=input_val>>1;
 	}
 	
@@ -211,7 +211,7 @@ void setIo(int fd)
 	unsigned char bit_val;
 	for(i=0;i<10;i++)
 	{
-		bit_val=(led[i]>0)?1:0;
+		bit_val=(ledr[i]>0)?1:0;
 		output_val=output_val|(bit_val<<i);
 	}
 	devbox_set_led(fd,output_val);
@@ -228,9 +228,9 @@ void setPins()
 		{
 			n_input=d_pin_mode[i]&0xff;
 			if(n_input<4)
-				d_pin[i]=key[n_input];
+				d_pin[i]=keys[n_input];
 			else
-				d_pin[i]=sw[n_input-4];
+				d_pin[i]=switches[n_input-4];
 		}
 	}
 }
@@ -271,7 +271,7 @@ void reset()
 	for (i=0;i<32;i++)
 	{
 		if(i<4)
-			key[i]=0;
+			keys[i]=0;
 		if(i<6)
 		{
 			a_pin[i]=0;
@@ -280,7 +280,7 @@ void reset()
 		if(i<10)
 		{
 			led[i]=0;
-			sw[i]=0;
+			switches[i]=0;
 		}
 		if(i<14)
 		{

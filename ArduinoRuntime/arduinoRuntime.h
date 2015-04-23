@@ -6,10 +6,7 @@
 
 #include<fbDraw.h>
 #include<fbBmp2fb.h>
-#include<hps_0.h>
-#include<socal/socal.h>
-#include<socal/hps.h>
-#include<socal/alt_gpio.h>
+#include<devbox_ioctl_driver.h>
 #include<time.h>
 #include<stdlib.h>
 
@@ -23,9 +20,6 @@
 #define LED_BUILTIN 13
 
 
-#define HW_REGS_BASE ( ALT_STM_OFST )
-#define HW_REGS_SPAN ( 0x04000000 )
-#define HW_REGS_MASK ( HW_REGS_SPAN - 1 )
 
 //Arduino Shield image map constants
 #define OFFSET					20
@@ -71,9 +65,9 @@ static int _n_output;
 static unsigned char d_pin[14];
 static unsigned short d_pin_mode[14];
 static unsigned char a_pin[6];
-static unsigned char led[10];
-static unsigned char sw[10];
-static unsigned char key[4];
+static unsigned char ledr[10];
+static unsigned char switches[10];
+static unsigned char keys[4];
 static unsigned short seg7[6];
 unsigned int gpio0[32];
 
