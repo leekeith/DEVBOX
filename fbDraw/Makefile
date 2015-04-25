@@ -4,7 +4,7 @@ CFLAGS= -Wall
 #CFILES= ./fbBmp2fb.c ./fbDraw.c
 OBJS= fbDraw.o fbBmp2fb.o
 LIBPATH=/lib
-INCPATH=/include
+INCPATH=/usr/include
 
 all:$(OBJS)
 	ar rcs libfbDraw.a $(OBJS)

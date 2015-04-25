@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 
 <?php
-	ini_set('include_path','/www/pages/phplibs/'); 
+	ini_set('include_path','phplibs/'); 
+	require "create_v_harness.php";
 	function kill_prog($lang)
 	{
 		shell_exec('pkill main');
@@ -28,23 +29,53 @@
 		$lang=$_POST['language'];
 	else $lang="c";
 	
+	if(isset($_POST['port_list']))
+	{
+		$port_list=$_POST['port_list'];
+		$port_array=explode(',',$port_list);
+		foreach($port_array as $x)
+			trim($x);
+	}
+	else $port_list='';
+	
+	if(isset($_POST['codetext']))
+	{
+		$main_code=$_POST['codetext'];
+		if($lang=='verilog')
+			$save_code='module main('.$port_list.');'.PHP_EOL.$main_code;
+		else $save_code=$main_code;
+		file_put_contents($main_file[$lang],$save_code);
+		
+	}
+		
+	
 	if(isset($_POST['work']))
 	{
 		kill_prog($lang);
 		if(isset($_POST['candr']))
 		{
 			shell_exec('rm ./main');
-			file_put_contents($main_file[$lang],$_POST['codetext']);
+
 			
-				$build_out.=shell_exec('make '.$lang.' 2>&1');                                           
-				$prog_out.=shell_exec('./main 2>&1');
+			$build_out.=shell_exec('make '.$lang.' 2>&1');                                           
+			$prog_out.=shell_exec('./main 2>&1');
 			
 		}
-		$main_code=file_get_contents($main_file[$lang], "true");
+		else if(isset($_POST['veri_trace']))
+		{
+			shell_exec('rm ./main');
+			
+			$build_out.=shell_exec('make '.$lang.'_trace 2>&1');
+		}
+		else if(isset($_POST['veri_run']))
+		{
+			shell_exec('rm -r obj_dir/');
+			
+			create_v_harness(explode(PHP_EOL,$_POST['rules']));
+			$build_out.=shell_exec('make '.$lang.'_run 2>&1');
+		}
 	}
-	else if(isset($_POST['codetext']))
-		$main_code=$_POST['codetext'];
-	else
+	else if(isset($_POST['go']))
 	{
 	 $f=@fopen($main_file[$lang],"r+");
 	 if($f!==false)
@@ -57,6 +88,34 @@
 	 	$main_code.='void setup()'.PHP_EOL.'{'.PHP_EOL.'}'.PHP_EOL.PHP_EOL.'void loop()'.PHP_EOL.'{'.PHP_EOL.'}'.PHP_EOL;
 	 $build_out="";
 	 $prog_out="";
+	}
+	if(isset($_POST['action']))
+		$action=$_POST['action'];
+		
+	if(isset($_POST['rules']))
+		$rules=$_POST['rules'];
+	else
+		$rules="";
+	$rule_array=explode(PHP_EOL, $rules);
+	if(isset($_POST['ok']) && $action != "null")
+	{
+		$new_rule=$action;
+		switch($action)
+		{
+			case "attach":
+				$new_rule.=' '.$_POST['io'].' '.$_POST['signal'];
+				break;
+			case "clock":
+				$new_rule.=' set to '.$_POST['clk'].' cycles';
+				if($_POST['clk']=='count')
+					$new_rule.=': '.$_POST['clk_num'];
+				break;
+			default:
+				break;
+		}
+		$rules.=$new_rule.PHP_EOL;
+		$rule_array[]=$new_rule;
+		$action="null";
 	}
 ?>
 
@@ -74,41 +133,156 @@
   
  </head>
 	
-<body style="height:100%">
-	<font size="22"><img style="width: 209px; vertical-align: middle;" alt="DEVBOX" title="DEVBOX Logo"
-	src="DevBoxLogoTest418x146.png"> <?php echo(strtoupper($lang)); ?></font>
+<body style="height:100%; width:98%">
+	<font size="22"><a href="index.html"><img style="width: 209px; vertical-align: middle;" alt="DEVBOX" title="DEVBOX Logo"
+	src="DevBoxLogoTest418x146.png"></a> <?php echo(strtoupper($lang)); ?></font>
 <br>
-</body>
+<form id="code_entry" method="post" action="" name="code_entry">
+<?php if($lang=="verilog")
+		{
+			echo('<div style="width:74.5%; float:left;">');
+			echo('List your ports below:');
 
-<div style="width:100%; float:left;">
-	<?php echo('Enter your '.$lang.' code:'); ?>
-	<br>
-	<form id="code_entry" method="post" action="" name="code_entry">
-		<textarea rows="15" id="code" name="codetext"><?php echo($main_code); ?></textarea>
-		<button name="candr">Compile &amp; Run</button>
-		<button name="kill">Stop Program</button>
-		<input type="hidden" id="work" name="work" value="work"></input>
-		<?php
-			echo('<input type="hidden" id="language" name="language" value="'.$lang.'"></input>'.PHP_EOL);
-			echo('<input type="hidden" id="mode" name="mode" value="'.$cm_mode[$lang].'"></input>'.PHP_EOL);
+		
+		echo('<br><label>module main(</label><input type="text" id="port_list" name="port_list" value="'.$port_list.'"></input>);');
+
+		}
+
+		else echo('<div style="width:99%; float:left;">');
+	 	echo('<H3>Enter your '.$lang.' code:</H3>'); 
+?>
+	
+		<textarea rows="15" id="code" name="codetext"><?php echo $main_code; ?></textarea>
+		<button name="save">Save File</button>
+		<?php if($lang!="verilog")
+		{
 		?>
+			<button name="candr">Compile &amp; Run</button>
+			<button name="kill">Stop Program</button>
+		<?php
+		}
+		else
+		{
+		?>
+			<button name="veri_trace">Run Trace</button>
+			<button name="veri_run">Run Simulation</button>
+			<button name="kill">Stop Program</button>
+		<?php
+		}
+		echo('<input type="hidden" id="work" name="work" value="work"></input>'.PHP_EOL);
+		echo('<input type="hidden" id="language" name="language" value="'.$lang.'"></input>'.PHP_EOL);
+		echo('<input type="hidden" id="mode" name="mode" value="'.$cm_mode[$lang].'"></input>'.PHP_EOL);
+		echo('<input type="hidden" id="rules" name="rules" value="'.$rules.'"></input>'.PHP_EOL);
+			
+		?>
+		
+			
 	</form>
+	<br>
 	<textarea style="width: 60%;" rows="5" name="compile_out" readonly><?php echo($build_out); ?></textarea><br>
 	<textarea style="width: 60%;" rows="5" name="program_out" readonly><?php echo($prog_out); ?></textarea><br>
 	
 </div>
+<?php	if($lang=="verilog")
+	{
+//Verilog harness generation
+?>
+
+	<div style="width:25%; float:right;">
+	<H3>Simulation</H3>
+	
+	<form id="harness" method="post" action="" name="harness">
+		<select name="action" id="action" onchange="submitForms()">
+			<option id="null" value="null"></option>
+			<option id="attach" value="attach">Attach</option>
+			<option id="clock"value="clock">Clock</option>
+	
+		</select>
+	<?php if(isset($_POST['action']))
+	{
+		echo ' ';
+		if($action=="attach")
+		{ 
+	?>
+			<select name="io" id="io">
+				<option value="SW">Switches</option>
+				<option value="KEY">Keys</option>
+				<option value="LEDR">Red LEDs</option>
+				<option value="CLK">Clock</option>
+			</select> 
+			to 
+		<?php
+			echo('<select name="signal" id="signal" size=1>');
+				foreach($port_array as $x)
+				
+					echo('<option value="'.$x.'">'.$x.'</option>');
+			echo('</select>');
+		}
+		else if($action=="clock")
+		{
+		?>
+				Set Clock cycle count to<br>
+				<input type="radio" name="clk" value="count" checked>This many</input>
+				<input type="text" name="clk_num" style="width:40px;"></input><br>
+				<input type="radio" name="clk" value="infinite">Infinite</input>
+				
+				
+		<?php
+		}
+		?>
+		<br>
+		<button name="ok" id="ok">OK</button>
+
+	<?php
+	}
+	
+	echo('<br><select size="'.count($rule_array).'" name="rule_list">');
+	foreach($rule_array as $elem)
+		if($elem!="" && $elem!=NULL)
+			echo('<option>'.$elem.'</option>');
+	echo('</select>');
+	
+	
+	echo('<input type="hidden" id="language" name="language" value="'.$lang.'"></input>'.PHP_EOL);
+	echo('<input type="hidden" id="mode" name="mode" value="'.$cm_mode[$lang].'"></input>'.PHP_EOL);
+	echo('<input type="hidden" id="act" name="act" value="'.$action.'"></input>'.PHP_EOL);
+	echo('<input type="hidden" id="rules" name="rules" value="'.$rules.'"></input>'.PHP_EOL);
+	echo('<input type="hidden" id="_code" name="codetext" value="'.$main_code.'"></input>'.PHP_EOL);
+	echo('<input type="hidden" id="_port_list" name="port_list" value="'.$port_list.'"></input>'.PHP_EOL);
+	
+	?>
+	
+	</form>
+	</div>
+<script type="text/javascript">
+	var action=document.getElementById("act");
+	if(action.value!=null)
+	{
+		var sel=document.getElementById(action.value);
+		sel.setAttribute("selected","selected");
+	}
+</script>	
+<?php
+	}
+?>
 
 <script type="text/javascript">
 	var cm_mode=document.getElementById("mode");
 	var text=document.getElementById("code");
 	var editor=CodeMirror.fromTextArea(text,{
-		theme:	"eclipse",
-		lineNumbers: "true",
-		mode:	cm_mode.value,
-		indentUnit: 3,
-		tabSize: 3,
-		indentWithTabs: true,
+			theme:	"eclipse",
+			lineNumbers: "true",
+			mode:	cm_mode.value,
+			indentUnit: 3,
+			tabSize: 3,
+			indentWithTabs: true,
 		});
+	function submitForms()
+	{
+		document.getElementById("code_entry").submit();
+		document.getElementById("harness").submit();
+	}
 </script>
+
 </body>
 </html>

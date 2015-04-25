@@ -57,8 +57,8 @@
 	</head>
 	<body>
 		<!--<?php echo $wiz_stage; ?>-->
-		<img style="width: 209px" alt="DEVBOX" title="DEVBOX Logo"
-	src="DevBoxLogoTest418x146.png">
+		<font size="22"><a href="index.html"><img style="width: 209px; vertical-align: middle;" alt="DEVBOX" title="DEVBOX Logo"
+	src="DevBoxLogoTest418x146.png"></a> WIZARD </font>
 <br>
 
 		<div id="form" class="left">

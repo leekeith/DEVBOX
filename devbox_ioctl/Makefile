@@ -9,9 +9,10 @@ PREFIX?= ./install
 
 package: all
 	mkdir -p $(PREFIX)/usr/include
-	mkdir -p $(PREFIX)/lib/modules/3.12.0
+	mkdir -p $(PREFIX)/lib/modules/3.12.0/kernel
 	cp *.h $(PREFIX)/usr/include
 	cp libdevbox_ioctl.so $(PREFIX)/lib
+	cp devbox_ioctl.ko $(PREFIX)/lib/modules/3.12.0/kernel
 	tar zcvf devbox_ioctl.tar.gz $(PREFIX)/*
 	
 

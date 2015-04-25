@@ -94,8 +94,8 @@
 	<title>DEVBOX Tutorials</title>
 	</head>
 	<body>
-	<font size="22"><img style="width: 209px; vertical-align: middle;" alt="DEVBOX" title="DEVBOX Logo"
-	src="DevBoxLogoTest418x146.png"> TUTORIALS</font>
+	<font size="22"><a href="index.html"><img style="width: 209px; vertical-align: middle;" alt="DEVBOX" title="DEVBOX Logo"
+	src="DevBoxLogoTest418x146.png"></a> TUTORIALS</font>
 <br>
 
 	<div>

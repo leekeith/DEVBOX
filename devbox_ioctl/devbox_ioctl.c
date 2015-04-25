@@ -7,8 +7,8 @@
 #include <linux/init.h>
 #include <linux/ioctl.h>
 #include <linux/fs.h>
-#include <hps_0.h>
-#include <socal/hps.h>
+#include "hps_0.h"
+#include "/usr/include/socal/hps.h"
 #include <asm/io.h>
 #include "devbox_ioctl.h"
 
