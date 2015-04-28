@@ -19,7 +19,7 @@
 #define HW_REGS_BASE ( ALT_STM_OFST )
 #define HW_REGS_SPAN ( 0x04000000 )
 #define HW_REGS_MASK ( HW_REGS_SPAN - 1 )
-#define PATTERN 0x2AB
+
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Keith Lee");
@@ -64,16 +64,7 @@ static int device_release(struct inode *inode, struct file *flip)
 long device_ioctl(struct file *flip, unsigned int ioctl_num, unsigned long ioctl_param)
 {
 	printk(KERN_INFO "Device %s ioctl\n",DEVICE_NAME);
-	printk(KERN_INFO "IOCTL_NUM=	%x\n",ioctl_num);
-	printk(KERN_INFO "IOCTL_PARAM=	%x\n",ioctl_param);
-	printk(KERN_INFO "IOCTL_FILE= %x\n", (int)flip);
-	
-	printk(KERN_INFO "SW=	%x\n",SW_BASE);
 	int i;
-	//short* x;
-	//x=virtual_base;
-	//printk(KERN_INFO "Start at 0X%X\n",x);
-	
 	printk(KERN_INFO "On to sw. SW=0x%X\n",sw);
 	switch(ioctl_num)
 	{
@@ -86,6 +77,24 @@ long device_ioctl(struct file *flip, unsigned int ioctl_num, unsigned long ioctl
 		return ioread16(sw);
 	case IOCTL_GET_KEY:
 		return ioread8(key);
+	case IOCTL_SET_SEG7_0:
+		iowrite8((char)ioctl_param, seg7);
+		return 0;
+	case IOCTL_SET_SEG7_1:
+		iowrite8((char)ioctl_param, int(((char*)seg7)+1));
+		return 0;
+	case IOCTL_SET_SEG7_2:
+		iowrite8((char)ioctl_param, int(((char*)seg7)+2));
+		return 0;
+	case IOCTL_SET_SEG7_3:
+		iowrite8((char)ioctl_param, int(((char*)seg7)+3));
+		return 0;
+	case IOCTL_SET_SEG7_4:
+		iowrite8((char)ioctl_param, int(((char*)seg7)+4));
+		return 0;
+	case IOCTL_SET_SEG7_5:		
+		iowrite8((char)ioctl_param, int(((char*)seg7)+5));
+		return 0;
 	default:
 		return -1;
 	}

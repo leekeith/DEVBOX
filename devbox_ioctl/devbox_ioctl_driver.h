@@ -8,5 +8,6 @@ short devbox_get_sw(int file_desc);
 char devbox_get_key(int file_desc);
 int open_devbox_io(void);
 void close_devbox_io(int file_desc);
+int devbox_set_7seg(int file_desc, short seg7_sel, char state);
 
 #endif

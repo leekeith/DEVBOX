@@ -1,0 +1,37 @@
+`title Introduction: The NOT Module
+`n_pages 10
+`start 1
+	##What is Verilog
+	Verilog is a hardware description language, or HDL used to outline the behavior of a logic design. 
+	In other words, it describes the hardware.
+
+	##What is a Module
+	Verilog divides up the behavior of a design into modules.
+	These modules are much like the functions in a software program.
+	They have input, they do something to that input and then they have output.
+
+	The code here is a trivial module.  The `module` keyword identifies the entry point of the module. `firstModule()` is its name.
+``
+`codeset
+module firstModule()
+
+endmodule
+``
+`end 1
+`start 2
+	##Wires
+	Wires in Verilog perform the same job as wires on a chip.
+	They are conuits for signals within a module.
+
+	##The Not Module
+	the Verilog code displayed here is our \"NOT\" gate. `(A, B)` indicates that there are two ports exposed to other modules.
+
+``	
+`codeset
+module notModule(A, B)
+	input wire A;
+	output wire B;
+	assign B = !A;
+endmodule
+``
+`end 2

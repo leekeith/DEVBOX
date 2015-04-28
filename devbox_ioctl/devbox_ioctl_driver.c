@@ -77,6 +77,40 @@ void close_devbox_io(int file_desc)
 	close(file_desc);
 }
 
+int devbox_set_7seg(int file_desc, short seg7_sel, char state)
+{
+	int ret_val;
+	switch(seg7_sel)
+	{
+	case 0:
+		ret_val=ioctl(file_desc, IOCTL_SET_SEG7_0, state);
+		break;
+	case 1:
+		ret_val=ioctl(file_desc, IOCTL_SET_SEG7_1, state);
+		break;
+	case 2:
+		ret_val=ioctl(file_desc, IOCTL_SET_SEG7_2, state);
+		break;
+	case 3:
+		ret_val=ioctl(file_desc, IOCTL_SET_SEG7_3, state);
+		break;
+	case 4:
+		ret_val=ioctl(file_desc, IOCTL_SET_SEG7_4, state);
+		break;
+	case 5:
+		ret_val=ioctl(file_desc, IOCTL_SET_SEG7_5, state);
+		break;
+	default:
+		return -1;
+	}
+	if(ret_val<0)
+	{
+		printf("DEVBOX IOCTL: set_7seg %d failed: %d", seg7_sel, ret_val);
+		return -1;
+	}
+	return ret_val;
+}
+
 
 
 

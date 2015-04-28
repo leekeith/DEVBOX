@@ -7,7 +7,6 @@
 			$clock['set']=0;
 			foreach ($sig_array as $elem)
 			{
-				echo($elem.'<BR>');
 				$elem=preg_split('/\s+/', $elem);
 				if($elem[0]=='attach')
 				{

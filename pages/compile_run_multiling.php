@@ -73,6 +73,7 @@
 			
 			create_v_harness(explode(PHP_EOL,$_POST['rules']));
 			$build_out.=shell_exec('make '.$lang.'_run 2>&1');
+			$prog_out.=shell_exec('./obj_dir/Vharness');
 		}
 	}
 	else if(isset($_POST['go']))

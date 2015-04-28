@@ -12,7 +12,7 @@ arduino:
 	@$(CC) main.c arduinoRuntime/arduinoRuntime.o $(CFLAGS) -o main 
 	
 verilog_run: 
-	@$(VC) -cc harness.v --exe sim_main.cpp -CFLAGS "$(CFLAGS)"
+	@$(VC) -cc harness.v --exe sim_main.cpp -CFLAGS "$(CFLAGS)" -LDFLAGS "-I/include -L/lib -ldevbox_ioctl"
 	@cd obj_dir && \
 	make -s -j -f Vharness.mk;
 	
