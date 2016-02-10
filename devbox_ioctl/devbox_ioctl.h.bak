@@ -24,16 +24,16 @@
 #define IOCTL_SET_SEG7_4	_IOW(MAJOR_NUM, 8, char)
 #define IOCTL_SET_SEG7_5	_IOW(MAJOR_NUM, 9, char)
 
-extern static int Device_Open=0;
-extern static int Major;
+static int Device_Open=0;
+static int Major;
 
 
-extern volatile static short* led;
-extern volatile static short* sw;
-extern volatile static char* key;
-extern volatile static char* seg7;
+volatile static short* led;
+volatile static short* sw;
+volatile static char* key;
+volatile static char* seg7;
 
-extern static unsigned long sink;
+static unsigned long sink;
 
 static int device_open(struct inode *inode, struct file *file);
 static int device_release(struct inode *inode, struct file *file);

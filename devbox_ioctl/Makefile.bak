@@ -13,8 +13,7 @@ package: all
 	cp *.h $(PREFIX)/usr/include
 	cp libdevbox_ioctl.so $(PREFIX)/lib
 	cp devbox_ioctl.ko $(PREFIX)/lib/modules/3.12.0/kernel
-	cd $(PREFIX); \
-	tar zcvf ../devbox_ioctl.tar.gz *;
+	tar zcvf devbox_ioctl.tar.gz $(PREFIX)/*
 	
 
 all: module libdevbox_ioctl.so

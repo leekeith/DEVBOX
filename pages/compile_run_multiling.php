@@ -3,10 +3,7 @@
 <?php
 	ini_set('include_path','phplibs/'); 
 	require "create_v_harness.php";
-	function kill_prog($lang)
-	{
-		shell_exec('pkill main');
-	}
+	
 	putenv('PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin');
 	
 	$handle=fopen('langtable.csv', 'r');
@@ -21,8 +18,7 @@
 		$langtable=fgetcsv($handle);
 	}
 	
-	$build_out='---Error Messages---'.PHP_EOL;
-	$prog_out='--Program Output---'.PHP_EOL;
+	
 	
 	
 	if(isset($_POST['language']))
@@ -42,13 +38,16 @@
 	{
 		$main_code=$_POST['codetext'];
 		if($lang=='verilog')
+		{
 			$save_code='module main('.$port_list.');'.PHP_EOL.$main_code;
+			create_v_harness(explode(PHP_EOL,$_POST['rules']));
+		}
 		else $save_code=$main_code;
 		file_put_contents($main_file[$lang],$save_code);
 		
 	}
 		
-	
+	/*
 	if(isset($_POST['work']))
 	{
 		kill_prog($lang);
@@ -76,7 +75,8 @@
 			$prog_out.=shell_exec('./obj_dir/Vharness');
 		}
 	}
-	else if(isset($_POST['go']))
+	*/
+	if(isset($_POST['go']) || !isset($_POST))
 	{
 	 $f=@fopen($main_file[$lang],"r+");
 	 if($f!==false)
@@ -121,6 +121,7 @@
 ?>
 
 <html><head>
+	<script src="socket.io.js"></script>
 	<script src="codemirror-4.2/lib/codemirror.js"></script>
 	<link rel="stylesheet" href="codemirror-4.2/lib/codemirror.css">
 	<link rel="stylesheet" href="codemirror-4.2/theme/eclipse.css">
@@ -131,12 +132,23 @@
 		.CodeMirror {border: 1px solid black}
   </style>
   <title>DEVBOX Editor</title>
-  
+  <script type="text/javascript">
+  	var socket=io(document.domain+':81');
+	socket.connect();
+	
+	
+	socket.on('compile', function(data){
+		document.getElementById('compile_out').innerHTML+=data;
+	});
+	socket.on('run', function(data){
+		document.getElementById('program_out').innerHTML+=data;
+	});
+  </script>
  </head>
 	
 <body style="height:100%; width:98%">
 	<font size="22"><a href="index.html"><img style="width: 209px; vertical-align: middle;" alt="DEVBOX" title="DEVBOX Logo"
-	src="DevBoxLogoTest418x146.png"></a> <?php echo(strtoupper($lang)); ?></font>
+	src="DevBoxLogoTest418x146.png"></a> <?php echo(strtoupper($lang)); ?> Editor</font>
 <br>
 <form id="code_entry" method="post" action="" name="code_entry">
 <?php if($lang=="verilog")
@@ -153,21 +165,20 @@
 	 	echo('<H3>Enter your '.$lang.' code:</H3>'); 
 ?>
 	
-		<textarea rows="15" id="code" name="codetext"><?php echo $main_code; ?></textarea>
-		<button name="save">Save File</button>
+		<?php echo('<textarea rows="15" id="code" name="codetext">'.$main_code.'</textarea>');?>
 		<?php if($lang!="verilog")
 		{
 		?>
-			<button name="candr">Compile &amp; Run</button>
-			<button name="kill">Stop Program</button>
+			<button name="candr" type="button" onclick="cr(document.getElementById('language').value)">Compile &amp; Run</button>
+			<button name="kill"type="button" onclick="kp()">Stop Program</button>
 		<?php
 		}
 		else
 		{
 		?>
-			<button name="veri_trace">Run Trace</button>
-			<button name="veri_run">Run Simulation</button>
-			<button name="kill">Stop Program</button>
+			<button name="veri_trace" enabled="false">Run Trace</button>
+			<button name="veri_run" type="button" onclick="cr_verilog()">Run Simulation</button>
+			<button name="kill" type="button" onclick="kp()">Stop Program</button>
 		<?php
 		}
 		echo('<input type="hidden" id="work" name="work" value="work"></input>'.PHP_EOL);
@@ -180,8 +191,10 @@
 			
 	</form>
 	<br>
-	<textarea style="width: 60%;" rows="5" name="compile_out" readonly><?php echo($build_out); ?></textarea><br>
-	<textarea style="width: 60%;" rows="5" name="program_out" readonly><?php echo($prog_out); ?></textarea><br>
+	<label>Compiler Output</label><br><textarea style="width: 60%;" rows="5" id="compile_out" name="compile_out" readonly><?php echo($build_out); ?></textarea><br>
+	<label>Program Output</label><br><textarea style="width: 60%;" rows="5" id="program_out" name="program_out" readonly><?php echo($prog_out); ?></textarea><br>
+	<label>Enter your program input here</label><br><input id="input" type="text" cols="40"></input>
+			<button type="button" onclick="scanf(escape(document.getElementById('input').value));">Submit</button>
 	
 </div>
 <?php	if($lang=="verilog")
@@ -277,12 +290,40 @@
 			indentUnit: 3,
 			tabSize: 3,
 			indentWithTabs: true,
+			pollInterval: 0,
 		});
 	function submitForms()
 	{
 		document.getElementById("code_entry").submit();
 		document.getElementById("harness").submit();
 	}
+	function cr(lang)
+	{
+	//	if(lang=='verilog_run')	
+	//		{socket.emit('candr',{lang: lang, code: {'module main('+document.getElementById('port_list').value+');'+editor.doc.getValue()}, page: 99});}
+	//	else
+			{socket.emit('candr',{lang: lang, code: editor.doc.getValue(), page: 99});}
+		document.getElementById('compile_out').innerHTML="";
+		document.getElementById('program_out').innerHTML="";
+	}
+	function cr_verilog()
+	{
+		var code = 'module main('+document.getElementById('port_list').value+');'+editor.doc.getValue();
+		socket.emit('candr',{lang: 'verilog', code: code, page: 99});
+		document.getElementById('compile_out').innerHTML="";
+		document.getElementById('program_out').innerHTML="";
+	}
+	function kp()
+	{
+		socket.emit('kill');
+	}
+	
+	function scanf(data)
+	{
+		socket.emit('input', data);
+		document.getElementById('input').value='';
+	}
+	
 </script>
 
 </body>

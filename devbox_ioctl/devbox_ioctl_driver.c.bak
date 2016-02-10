@@ -13,8 +13,6 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 
-char hex_map[]={0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, 0x7f, 0x6f, 0x77, 0x7c, 0x58, 0x5e, 0x79, 0x71};
-
 int devbox_set_led(int file_desc, short led_state)
 {
 	int ret_val;
@@ -113,21 +111,6 @@ int devbox_set_7seg(int file_desc, short seg7_sel, char state)
 	return ret_val;
 }
 
-int devbox_7seg_write(int file_desc, int value)
-{
-	int trunc_val=value&0x00ffffff;
-	int i;
-	char* p_trunc=&trunc_val;
-	char digit;
-	for(i=0;i<3;i++)
-	{
-		digit=p_trunc[i]&0x0f;
-		devbox_set_7seg(file_desc, i*2, hex_map[digit]);
-		digit=(p_trunc[i]&0xf0)>>4;
-		devbox_set_7seg(file_desc, (i*2)+1, hex_map[digit]);
-	}
-	return 0;
-}
 
 
 

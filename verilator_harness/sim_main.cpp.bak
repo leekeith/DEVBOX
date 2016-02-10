@@ -1,9 +1,16 @@
-	#include"Vharness.h"
-	#include"arduinoRuntime/arduinoRuntime.h"
+#include"Vharness.h"
+
+#if defined (__cplusplus)
 extern "C"
 {
+#endif
+
 #include<devbox_ioctl_driver.h>
+
+#if defined (__cplusplus)
 }
+#endif
+
 #include<verilated.h>
 #include<iostream>
 #include<cstdio>
@@ -39,14 +46,11 @@ int main(int argc, char** argv, char** env)
 			if(cycles>top->CLK_COUNT)
 				exit(0);
 		}
-		devbox_7seg_write(db, cycles);
 		close_devbox_io(db);
 		if(top->CLK==0)
 		{
 			
 			cout << cycles<< ": "<<"\n\t"<<top->LEDR<<"\n\t"<<top->SW<<endl;
-
-
 		}
 		
 		top->eval();

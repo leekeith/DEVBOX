@@ -1,0 +1,12 @@
+devbox_ioctl for DEVBOX recipie
+
+git clone git://support.criticallink.com/home/git/linux-socfpga.git
+cd linux-socfpga/
+git checkout -b socfpga-3.12 origin/socfpga-3.12
+cp /path/to/patch/Makefile ./
+cp /path/to/patch/DEVBOX_linux.config ./.config
+make ARCH=arm CROSS-COMPILE=arm-linux-gnueabihf- defconfig socfpga_defconfig
+make ARCH=arm CROSS-COMPILE=arm-linux-gnueabihf- LOADADDR=0x8000 LOCALVERSION= modules
+sudo make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- LOCALVERSION= modules_install
+cd /path/to/devbox_ioctl/
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- package

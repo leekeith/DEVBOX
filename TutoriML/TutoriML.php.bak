@@ -64,7 +64,7 @@
 		{
 			$line=fgets($handle);
 			$line=ltrim($line,$mask);
-		}while(strncmp($line,$startTag,$len)!=0 && strncmp($line,'`'.$endTag,$elen+1) !=0 && !feof($handle));
+		}while(strncmp($line,$startTag,$len)!=0 && strncmp($line,$endTag,$elen) !=0 && !feof($handle));
 		return array($handle, $line);
 	}
 	
@@ -114,11 +114,10 @@
 		$etLen=strlen($endTag);
 		$findEnd='`with';
 		$feLen=strlen($findEnd);
-		$elemEnd="``";
-		$eeLen=strlen($elemEnd);
-		while(strncmp($line,'`'.$endTag,$etLen+1)!=0 && !feof($handle))
+		while(strncmp($line,$endTag,$etLen)!=0 && !feof($handle))
 		{
-			
+			$elemEnd="``";
+			$eeLen=strlen($elemEnd);
 			list($handle,$line)=tmlSeek($handle, $startTag, $endTag);
 			$elemMode=str_replace("`","",$line);
 			$elemVal="";
@@ -126,7 +125,7 @@
 			if(!strncmp($elemMode,'codereplace',strlen('codereplace')))
 			{
 				$findVal="";
-				while(strncmp($line,$findEnd,$feLen)!=0 && strncmp($line,'`'.$endTag,$etLen+1)!=0 && !feof($handle))
+				while(strncmp($line,$findEnd,$feLen)!=0 && strncmp($line,$endTag,$etLen)!=0 && !feof($handle))
 				{
 					$findVal.=$line;
 					$line=fgets($handle);
@@ -135,21 +134,21 @@
 				$line=fgets($handle);
 			}
 			
-			while(strncmp($line,$elemEnd,$eeLen)!=0 && strncmp($line,'`'.$endTag,$etLen+1)!=0 && !feof($handle))
+			while(strncmp($line,$elemEnd,$eeLen)!=0 && strncmp($line,$endTag,$etLen)!=0 && !feof($handle))
 			{
 				$elemVal=$elemVal.$line;
 				$line=fgets($handle);
 			}
-					
-			if(isset($findVal))
-			{
-				$elemVal=substr($elemVal,0,-1);
-				$code[]=array($elemMode,$elemVal,$findVal);
-				unset($findVal);
+			if(strlen($elemVal)!=strlen(""))
+			{			
+				if(isset($findVal))
+				{
+					$elemVal=substr($elemVal,0,-1);
+					$code[]=array($elemMode,$elemVal,$findVal);
+				}
+				else
+					$code[]=array($elemMode,$elemVal,"\0");
 			}
-			else
-				$code[]=array($elemMode,$elemVal,"\0");
-		
 			if(strncmp($line, '`'.$endTag,$etLen+1))
 				break;
 		}
@@ -161,64 +160,44 @@
 	{
 		if(isset($oldCode))
 			$newCode=$oldCode;
-		else $newCode='';
+		else $newCode="";
 		foreach($newCodeArray as $elem)
 		{
 			
 			if(!strncmp($elem[0],'codeappend',strlen('codeappend')))
 			{
-				$x=strripos($newCode,"}");
-				$newCode=$x.$newCode;
-				if($x!=FALSE)
-				{
-					if(strpos(substr($newCode,$x),'int main()')!=FALSE)
-					{
-						$newCode.=$elem[1];
-					
-					}
-					else 
-					{
-						$newCode=trim($newCode,'}').$elem[1].'}';
-						}
-				}
-				else
-				{
-					$newCode.=$elem[1];
-					}
+			
+				$newCode.=$elem[1];
 			}
 			else if(!strncmp($elem[0],'codeprepend',strlen('codeprepend')))
 			{
-				
 				$newCode=$elem[1].$newCode;
 			}
 			else if(!strncmp($elem[0],'codeset',strlen('codeset')))
 			{
-				
 				$newCode=$elem[1];
 			}
-			else if(!strncmp($elem[0],'codereplace', strlen('codereplace')))
+			else if(!strncmp($elem[0],'codereplace',strlen('codereplace')))
 			{
-				
 				$newCode=str_replace($elem[2], $elem[1], $newCode);
 			}
+			else echo "none<br>";
 		}
 		return $newCode;
 		
 	}
 	function unsetCode($oldCode, $newCodeArray)
 	{
-		
 		if(isset($oldCode))
 			$newCode=$oldCode;
-		else $newCode='';
-		
+		else $newCode="";
 		foreach($newCodeArray as $elem)
 		{
 			
 			if(!strncmp($elem[0],'codeappend',strlen('codeappend')) || !strncmp($elem[0],'codeprepend',strlen('codeprepend')))
 			{
 			
-				$newCode=str_replace(substr($elem[1],0,-1),'',$newCode);
+				$newCode=str_replace(substr($elem[1],0,-1),"",$newCode);
 			}
 		
 			else if(!strncmp($elem[0],'codeset',strlen('codeset')))
@@ -232,49 +211,6 @@
 		}
 		return $newCode;
 		
-	}
-	function fsetCode($file, $newCodeArray)
-	{
-		$newCode=file_get_contents($file);
-		foreach($newCodeArray as $elem)
-		{
-			
-			if(!strncmp($elem[0],'codeappend',strlen('codeappend')))
-			{
-				$x=strripos($newCode,"}");
-				if($x!=FALSE)
-				{
-					if(strpos(substr($newCode,$x),'int main()')!=FALSE)
-					{
-						$newCode.=$elem[1];
-					}
-					else 
-					{
-						$newCode=substr($newCode,0,$x).$elem[1].'}';
-					}
-				}
-				else
-				{
-					$newCode.=$elem[1];
-				}
-			}
-			else if(!strncmp($elem[0],'codeprepend',strlen('codeprepend')))
-			{
-				
-				$newCode=$elem[1].$newCode;
-			}
-			else if(!strncmp($elem[0],'codeset',strlen('codeset')))
-			{
-				
-				$newCode=$elem[1];
-			}
-			else if(!strncmp($elem[0],'codereplace', strlen('codereplace')))
-			{
-				
-				$newCode=str_replace($elem[2], $elem[1], $newCode);
-			}
-		}
-		file_put_contents($file, $newCode);
 	}
 	
 ?>

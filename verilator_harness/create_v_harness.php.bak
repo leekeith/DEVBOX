@@ -7,6 +7,7 @@
 			$clock['set']=0;
 			foreach ($sig_array as $elem)
 			{
+				echo($elem.'<BR>');
 				$elem=preg_split('/\s+/', $elem);
 				if($elem[0]=='attach')
 				{
@@ -44,10 +45,7 @@
 		$harness.='	main u0('.PHP_EOL;
 		$i=0;
 		$len=count($attach);
-		if($len==0)
-			$harness.='	);'.PHP_EOL;
-			
-		else foreach ($attach as $sig)
+		foreach ($attach as $sig)
 		{
 			$harness.='		.'.$sig[1].'('.$sig[0].')';
 			if($i!=$len-1)

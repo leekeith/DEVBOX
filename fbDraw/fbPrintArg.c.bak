@@ -1,5 +1,3 @@
-// fbPrintArg.c
-// (c) DEVBOX 2015
 #include "fbDraw.h"
 #include "fbBmp2fb.h"
 #define MARGIN 5
